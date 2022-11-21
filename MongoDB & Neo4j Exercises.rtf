@@ -1,0 +1,132 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2706
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica-Bold;\f1\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red115\green138\blue4;\red22\green21\blue22;
+\red0\green0\blue0;\red38\green38\blue38;\red71\green91\blue98;\red165\green119\blue5;\red37\green146\blue134;
+}
+{\*\expandedcolortbl;;\csgray\c0\c0;\cssrgb\c52157\c60000\c0;\cssrgb\c11373\c10980\c11373;
+\cssrgb\c0\c0\c0;\cssrgb\c20000\c20000\c20000;\cssrgb\c34510\c43137\c45882;\cssrgb\c70980\c53725\c0;\cssrgb\c16471\c63137\c59608;
+}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\b\fs28 \cf0 \cb2 Luke Schwenke\
+MongoDB and Neo4j Exercises\
+
+\f1\b0\fs26 \
+\
+
+\f0\b MongoDB Queries
+\f1\b0 \
+\pard\pardeftab720\partightenfactor0
+\cf3 \expnd0\expndtw0\kerning0
+\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf4 1. \cf0 \kerning1\expnd0\expndtw0 Total number of customers living in California
+\f1\b0 \cf4 \expnd0\expndtw0\kerning0
+\
+db.customers.find(\{ Country:"United States" , District:"California"\}).count()\
+\
+2. 
+\f0\b\fs28 \cf0 \kerning1\expnd0\expndtw0 Movies that are rated NC-17
+\f1\b0\fs26 \cf4 \expnd0\expndtw0\kerning0
+\
+db.films.find(\{Rating: "NC-17"\})\
+\
+3. 
+\f0\b\fs28 \cf0 \kerning1\expnd0\expndtw0 Counts of Movies by Category
+\f1\b0\fs26 \cf4 \expnd0\expndtw0\kerning0
+\
+db.films.aggregate([\
+\{'$group': \{ '_id': "$Category", "count": \{ '$sum': 1 \} \} \},\
+           \{ '$sort' : \{'count' : -1\} \} ] )\
+\
+4. 
+\f0\b Top 2 Movies with Movie Length > 25 min. OR which has commentaries as special features
+\f1\b0 \
+db.films.find( \{ $or: [ \{ "Special Features": "Commentaries" \}, \{ length: \{ $gt: 25 \} \} ] \} ).limit(2)\
+\
+5
+\f0\b .
+\f1\b0  
+\f0\b Part 1: List film counts by rating to see which movie ratings are more 
+\f1\b0 \
+
+\f0\b popular than others for future film production.
+\f1\b0 \
+\
+db.films.aggregate([\
+\{'$group': \{ '_id': "$Rating", "count": \{ '$sum': 1 \} \} \},\
+           \{ '$sort' : \{'count' : -1\} \}   \
+])\
+\
+5. 
+\f0\b Part 2: List countries alphabetically by count of customers to see\
+which countries have the most customers. This could be sorted on count as well.
+\f1\b0 \
+\
+db.customers.aggregate([\
+\{'$group': \{ '_id': "$Country", "count": \{ '$sum': 1 \} \} \},\
+           \{ '$sort' : \{'_id' : 1\} \}   \
+])\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \kerning1\expnd0\expndtw0 \
+
+\f0\b Neo4j Queries
+\f1\b0 \
+\
+6. \cf5 \expnd0\expndtw0\kerning0
+ 
+\f0\b Find all Producers that produced the movie When Harry Met Sally 
+\f1\b0 \cf0 \
+\kerning1\expnd0\expndtw0 \
+\pard\pardeftab720\partightenfactor0
+\cf3 \expnd0\expndtw0\kerning0
+MATCH\cf6  \cf7 (\cf6 WhenHarryMetSally \cf7 \{\cf6 title\cf7 :\cf6  \cf8 "When Harry Met Sally"\cf7 \})<-[:\cf6 PRODUCED\cf7 ]-(\cf6 producers\cf7 )\cf6  \cf3 RETURN\cf6  producers\cf7 .\cf6 name\cf0 \
+\
+7.\cf5  
+\f0\b Find directors who have directed more than 2 movies\cf3   
+\f1\b0 \
+\pard\pardeftab720\partightenfactor0
+\cf5 \
+\pard\pardeftab720\partightenfactor0
+\cf3 MATCH\cf6  \cf7 (\cf6 p\cf7 :\cf6 Person\cf7 )-[:\cf6 DIRECTED\cf7 ]->()\cf6  \cf3 WITH\cf6  p\cf7 ,\cf6  \cf3 count\cf7 (*)\cf6  \cf3 AS\cf6  MOVIE_COUNT \
+\cf3 WHERE\cf6  MOVIE_COUNT \cf7 >\cf6  \cf9 2\cf6  \
+\cf3 RETURN\cf6  p\cf7 .\cf6 name \cf3 AS\cf6  DIRECTOR\cf7 ,\cf6  MOVIE_COUNT\cf0 \
+\
+8. 
+\f0\b \cf5 Find the actors with 5+ movies, and the movies in which they acted \uc0\u8232 
+\f1\b0 \cf0 \
+\cf3 MATCH\cf7 (\cf0 a\cf7 :\cf6 Person\cf7 )-[\cf3 rel\cf7 :\cf6 ACTED_IN\cf7 ]->(\cf6 m\cf7 :\cf6 Movie\cf7 )\cf6  \cf3 WITH\cf6  \cf3 count\cf7 (\cf3 distinct\cf6  m\cf7 )>=\cf9 5\cf6  \cf3 AS\cf6  COUNT_FLAG\cf7 ,\cf6  \cf3 count\cf7 (\cf3 distinct\cf6  m\cf7 )\cf6  \cf3 AS\cf6  MOVIE_COUNT\cf7 ,\cf6  \cf0 a\cf7 .\cf6 name \cf3 AS\cf6  ACTOR\cf7 ,\cf6  collect\cf7 (\cf6 m\cf7 .\cf6 title\cf7 )\cf6  \cf3 as\cf6  MOVIE_TITLES\cf0 \
+\cf3 WHERE\cf6  COUNT_FLAG\cf7 =\cf3 true\cf0 \
+\cf3 RETURN\cf6  ACTOR\cf7 ,\cf6  MOVIE_COUNT\cf7 ,\cf6  MOVIE_TITLES\cf0 \
+\cf3 ORDER\cf6  \cf3 BY\cf6  MOVIE_COUNT \cf3 DESC\cf0 \
+\
+9. 
+\f0\b \cf5 Movies and actors exactly 3 "hops" away from the movie Hoffa \uc0\u8232 
+\f1\b0 \cf3 \
+MATCH\cf6  \cf7 (\cf6 m\cf7 :\cf6 Movie \cf7 \{\cf6 title\cf7 :\cf8 "Hoffa"\cf7 \})-[*\cf9 3\cf7 ]-(\cf6 hollywood\cf7 )\cf0 \
+\cf3 RETURN\cf6  \cf3 DISTINCT\cf6  hollywood\cf3 \
+\pard\pardeftab720\partightenfactor0
+\cf5 \
+10.
+\f0\b  Provide 2 additional queries and indicate the specific business use cases they address \uc0\u8232 
+\f1\b0 \cf0 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf0 Part 1: Movies released in 2000 or more recent. Lots of people would rather watch newer movies so return this list.
+\f1\b0 \
+\pard\pardeftab720\partightenfactor0
+\cf5 \
+\pard\pardeftab720\partightenfactor0
+\cf3 MATCH\cf6  \cf7 (\cf6 x\cf7 :\cf6 Movie\cf7 )\cf6  \cf3 WHERE\cf6  x\cf7 .\cf6 released \cf7 >=\cf6  \cf9 2000\cf6  \cf3 RETURN\cf6  x\cf7 .\cf6 title \cf3 AS\cf6  TITLE\cf7 ,\cf6  x\cf7 .\cf6 released \cf3 as\cf6  RELEASE_YEAR \cf3 ORDER\cf6  \cf3 BY\cf6  RELEASE_YEAR \cf3 DESC\cf0 \
+\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf0 Part 2: Return actors who have worked directly with Tom Hanks to see if they should be cast in future movies starring Tom.
+\f1\b0 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf3 MATCH\cf6  \cf7 (\cf6 tom\cf7 :\cf6 Person \cf7 \{\cf6 name\cf7 :\cf8 "Tom Hanks"\cf7 \})-[:\cf6 ACTED_IN\cf7 ]->(\cf6 m\cf7 )<-[:\cf6 ACTED_IN\cf7 ]-(\cf6 coActors\cf7 )\cf0 \
+\cf3 RETURN\cf6  coActors\cf7 .\cf6 name \cf3 AS\cf6  TomHanksCoActors\cf5 \
+}
